@@ -19,7 +19,7 @@ import MarketplaceAbi from '../contractsData/Marketplace.json'
 import MarketplaceAddress from '../contractsData/Marketplace-address.json'
 import NFTAbi from '../contractsData/NFT.json'
 import NFTAddress from '../contractsData/NFT-address.json'
- 
+
 function App() {
   const [loading, setLoading] = useState(true)
   const [account, setAccount] = useState(null)
@@ -39,6 +39,8 @@ function App() {
   }
 
   const loadContracts = async (signer) => {
+    console.log("loading Contract " + MarketplaceAddress.address)
+
     const marketplace = new ethers.Contract(MarketplaceAddress.address, MarketplaceAbi.abi, signer)
     setMarketplace(marketplace)
     const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer)
