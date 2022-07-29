@@ -18,11 +18,11 @@ module.exports = {
      },
      matic: {
        url: process.env.REACT_APP_API_URL_MATIC,
-       accounts: [process.env.REACT_APP_PRIVATE_KEY_MATIC]
+       accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_MATIC]
      },
      mumbai: {
        url: process.env.REACT_APP_API_URL_MUMBAI,
-       accounts: [process.env.REACT_APP_PRIVATE_KEY_MUMBAI]
+       accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_MUMBAI]
      }
   },
   paths: {
