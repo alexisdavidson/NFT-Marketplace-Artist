@@ -1,10 +1,24 @@
 import { useState, useEffect } from 'react'
 import { ethers } from "ethers"
 import { Row, Col, Card, Button } from 'react-bootstrap'
+import { useNavigate } from "react-router-dom";
 
 const Home = ({ marketplace, nft }) => {
+    let navigate = useNavigate(); 
+
     const [loading, setLoading] = useState(true)
     const [items, setItems] = useState([])
+
+    const routeChangeViewItem = (item) => { 
+        let path = "/view-item" 
+        console.log("Navigate to view-item " + item.itemId)
+        navigate(path, {
+            state: {
+                itemId: parseInt(item.itemId)
+            }
+        })
+    }
+
     const loadMarketplaceItems = async () => {
         // Load all unsold items
         const itemCount = await marketplace.itemCount()
@@ -66,8 +80,9 @@ const Home = ({ marketplace, nft }) => {
                                     </Card.Body>
                                     <Card.Footer>
                                     <div className='d-grid'>
-                                        <Button onClick={() => buyMarketItem(item)} variant="primary" size="lg">
-                                            Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
+                                    {ethers.utils.formatEther(item.totalPrice)} ETH <br/>
+                                        <Button onClick={() => routeChangeViewItem(item)} variant="primary" size="lg">
+                                            View
                                         </Button>
                                     </div>
                                     </Card.Footer>

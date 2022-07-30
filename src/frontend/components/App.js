@@ -7,6 +7,7 @@ import logo from './logo.png';
 import './App.css';
 import Navigation from './Navbar';
 import Home from './Home';
+import ViewItem from './ViewItem';
 import Create from './Create';
 import MyPurchases from './MyPurchases';
 import MyListedItems from './MyListedItems';
@@ -69,6 +70,9 @@ function App() {
             } />
             <Route path="/my-purchases" element={
               <MyPurchases marketplace={marketplace} nft={nft} account={account}/>
+            } />
+            <Route path="/view-item" element={
+              <ViewItem marketplace={marketplace} nft={nft} account={account}/>
             } />
           </Routes>
         ) }
