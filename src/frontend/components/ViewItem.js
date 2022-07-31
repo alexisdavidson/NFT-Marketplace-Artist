@@ -9,7 +9,16 @@ const ViewItem = ({ marketplace, nft, account }) => {
     const [loading, setLoading] = useState(true)
     const [item, setItem] = useState([])
     const [hasBought, setHasBought] = useState(false)
+    const [buyers, setBuyers] = useState([])
 
+    function reverseArr(input) {
+        var ret = new Array;
+        for(var i = input.length - 1; i >= 0; i--) {
+            ret.push(input[i]);
+        }
+        return ret;
+    }
+    
     const loadMarketplaceItem = async () => {
         console.log("Looking for item " + location.state.itemId)
 
@@ -35,6 +44,10 @@ const ViewItem = ({ marketplace, nft, account }) => {
                     image: metadata.image,
                     sold: parseInt(item.sold)
                 })
+
+                let itemBuyers = await nft.getBuyers(location.state.itemId)
+                if (itemBuyers != null && itemBuyers.length > 0)
+                    setBuyers(reverseArr(itemBuyers));
 
                 if (await nft.userHasBoughtToken(account, location.state.itemId)) {
                     setHasBought(true);
@@ -91,24 +104,26 @@ const ViewItem = ({ marketplace, nft, account }) => {
                             </Row>
                             <Row className="g-4 pt-1 pb-4">
                                 <h4>History</h4>
-                                <table className="table table-bordered table-striped table-light">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Date</th>
-                                            <th scope="col">Buyer</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                30.07.2022 17:56
-                                            </td>
-                                            <td>
-                                                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                {buyers.length > 0 ?
+                                    <table className="table table-bordered table-striped table-light">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Latest Buyers</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {buyers.map((buyer, idx) => (
+                                                <tr>
+                                                    <td>
+                                                        {buyer}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                : (
+                                    <div>No purchase yet.</div>
+                                )}
                             </Row>
                         </Col>
                     </Row>

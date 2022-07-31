@@ -25,6 +25,10 @@ contract NFT is ERC721URIStorage {
         return buyers[_tokenId].length;
     }
 
+    function getBuyers(uint256 _tokenId) public view returns(address[] memory) {
+        return buyers[_tokenId];
+    }
+
     function userHasBoughtToken(address _user, uint256 _tokenId) public view returns(bool) {
         for (uint i = 0; i < buyers[_tokenId].length; i++) {
             if (buyers[_tokenId][i] == _user) {
