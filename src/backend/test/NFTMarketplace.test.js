@@ -20,8 +20,8 @@ describe("NFTMarketplace", async function() {
 
     describe("Deployment", function() {
         it("Should track name and symbol of the nft collection", async function() {
-            expect(await nft.name()).to.equal("Linko NFT")
-            expect(await nft.symbol()).to.equal("LNK")
+            expect(await nft.name()).to.equal("Artist Marketplace NFT")
+            expect(await nft.symbol()).to.equal("AMN")
         })
         it("Should track feeAccount and feePercent of the marketplace", async function() {
             expect(await marketplace.feeAccount()).to.equal(deployer.address)
@@ -73,7 +73,7 @@ describe("NFTMarketplace", async function() {
             expect(item.nft).to.equal(nft.address)
             expect(item.tokenId).to.equal(1)
             expect(item.price).to.equal(toWei(1))
-            expect(item.sold).to.equal(false)
+            expect(item.sold).to.equal(0)
         })
 
         it("Should fail if price is set to zero", async function () {
@@ -121,10 +121,10 @@ describe("NFTMarketplace", async function() {
             const fee = +price * (+feePercent / 100)
             // feeAccount should receive fee
             expect(+fromWei(feeAccountFinalEthBal)).to.equal(+fee + +fromWei(feeAccountInitialEthBal))
-            // The buyer should now own the nft
-            expect(await nft.ownerOf(1)).to.equal(addr2.address)
+            // The buyer should now have right to play the nft
+            expect(await nft.userHasBoughtToken(addr2.address, 1)).to.equal(true)
             // Item should be marked as sold
-            expect((await marketplace.items(1)).sold).to.equal(true)
+            expect((await marketplace.items(1)).sold).to.equal(1)
         })
         
         it("Should fail for invalid item ids, sold items and when not enough ehter is paid", async function () {
@@ -138,8 +138,8 @@ describe("NFTMarketplace", async function() {
                 .to.be.revertedWith("not enough ether to cover item price and market fee");
             // fails when deployer tries purchasing item 1 after it was already sold
             await marketplace.connect(addr2).purchaseItem(1, { value: totalPriceInWei })
-            await expect(marketplace.connect(deployer).purchaseItem(1, { value: totalPriceInWei }))
-                .to.be.revertedWith("item already sold");
+            // await expect(marketplace.connect(deployer).purchaseItem(1, { value: totalPriceInWei }))
+            //     .to.be.revertedWith("item already sold");
         })
     });
 })

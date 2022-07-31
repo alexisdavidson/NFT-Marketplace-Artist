@@ -25,24 +25,22 @@ const Home = ({ marketplace, nft }) => {
         let items = []
         for (let i = 1; i <= itemCount; i++) {
             const item = await marketplace.items(i)
-            if (!item.sold) {
-                // get uri url from nft contract
-                const uri = await nft.tokenURI(item.tokenId)
-                // use uri to fetch the nft metadata stored on ipfs 
-                const response = await fetch(uri)
-                const metadata = await response.json()
-                // get total price of item (item price + fee)
-                const totalPrice = await marketplace.getTotalPrice(item.itemId)
-                // Add item to items array
-                items.push({
-                    totalPrice,
-                    itemId: item.itemId,
-                    seller: item.seller,
-                    name: metadata.name,
-                    description: metadata.description,
-                    image: metadata.image
-                })
-            }
+            // get uri url from nft contract
+            const uri = await nft.tokenURI(item.tokenId)
+            // use uri to fetch the nft metadata stored on ipfs 
+            const response = await fetch(uri)
+            const metadata = await response.json()
+            // get total price of item (item price + fee)
+            const totalPrice = await marketplace.getTotalPrice(item.itemId)
+            // Add item to items array
+            items.push({
+                totalPrice,
+                itemId: item.itemId,
+                seller: item.seller,
+                name: metadata.name,
+                description: metadata.description,
+                image: metadata.image
+            })
         }
         setLoading(false)
         setItems(items)
@@ -80,7 +78,7 @@ const Home = ({ marketplace, nft }) => {
                                     </Card.Body>
                                     <Card.Footer>
                                     <div className='d-grid'>
-                                    {ethers.utils.formatEther(item.totalPrice)} ETH <br/>
+                                    {ethers.utils.formatEther(item.totalPrice)} Matic <br/>
                                         <Button onClick={() => routeChangeViewItem(item)} variant="primary" size="lg">
                                             View
                                         </Button>

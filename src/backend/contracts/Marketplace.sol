@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+// import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+import "./NFT.sol";
 
 contract Marketplace is ReentrancyGuard {
     address payable public immutable feeAccount; // the account that receives fees
@@ -11,11 +13,11 @@ contract Marketplace is ReentrancyGuard {
 
     struct Item {
         uint itemId;
-        IERC721 nft;
+        NFT nft;
         uint tokenId;
         uint price;
         address payable seller;
-        bool sold;
+        uint sold;
     }
 
     event Offered (
@@ -43,7 +45,7 @@ contract Marketplace is ReentrancyGuard {
         feePercent = _feePercent;
     }
 
-    function makeItem(IERC721 _nft, uint _tokenId, uint _price) external nonReentrant {
+    function makeItem(NFT _nft, uint _tokenId, uint _price) external nonReentrant {
         require(_price > 0, "Price must be greater than zero");
         itemCount += 1;
 
@@ -56,7 +58,7 @@ contract Marketplace is ReentrancyGuard {
             _tokenId,
             _price,
             payable(msg.sender),
-            false
+            0
         );
 
         // emit Offered event
@@ -75,17 +77,20 @@ contract Marketplace is ReentrancyGuard {
 
         require(_itemId > 0 && _itemId <= itemCount, "item doesn't exist");
         require(msg.value >= _totalPrice, "not enough ether to cover item price and market fee");
-        require(!item.sold, "item already sold");
+        // require(!item.sold, "item already sold");
 
         // pay seller and feeAccount
         item.seller.transfer(item.price);
         feeAccount.transfer(_totalPrice - item.price);
 
-        // update item to sold
-        item.sold = true;
+        // update sold count
+        item.sold += 1;
 
         // transfer nft to buyer
-        item.nft.transferFrom(address(this), msg.sender, item.tokenId);
+        // item.nft.transferFrom(address(this), msg.sender, item.tokenId);
+
+        // give play rights to buyer
+        item.nft.addBuyer(msg.sender, item.tokenId);
 
         // emit Bought event
         emit Bought(

@@ -3,11 +3,13 @@ import { ethers } from "ethers"
 import { Row, Col, Card, Button } from 'react-bootstrap'
 import {useLocation} from 'react-router-dom';
 
-const ViewItem = ({ marketplace, nft }) => {
+const ViewItem = ({ marketplace, nft, account }) => {
     const location = useLocation();
 
     const [loading, setLoading] = useState(true)
     const [item, setItem] = useState([])
+    const [hasBought, setHasBought] = useState(false)
+
     const loadMarketplaceItem = async () => {
         console.log("Looking for item " + location.state.itemId)
 
@@ -30,8 +32,13 @@ const ViewItem = ({ marketplace, nft }) => {
                     seller: item.seller,
                     name: metadata.name,
                     description: metadata.description,
-                    image: metadata.image
+                    image: metadata.image,
+                    sold: parseInt(item.sold)
                 })
+
+                if (await nft.userHasBoughtToken(account, location.state.itemId)) {
+                    setHasBought(true);
+                }
                 setLoading(false)
             }
         }
@@ -56,25 +63,53 @@ const ViewItem = ({ marketplace, nft }) => {
         <div className="flex justify-center">
             {item != null ?
                 <div className="px-5 container">
-                    <h2>{location.state.itemId} {item.name}</h2>
-                    <Row xs={1} md={2} lg={4} className="g-4 py-5">
-                        <Col className="overflow-hidden">
+                    <Row className="g-4 py-5">
+                        <Col className="col-lg-4 overflow-hidden">
                             <Card>
                                 <Card.Img variant="top" src={item.image} />
-                                <Card.Body color="secondary">
-                                <Card.Title>{item.name}</Card.Title>
-                                <Card.Text>
+                                <Card.Text className="py-3">
+                                    <h4>Description</h4>
                                     {item.description}
                                 </Card.Text>
-                                </Card.Body>
-                                <Card.Footer>
-                                <div className='d-grid'>
-                                    <Button onClick={() => buyMarketItem(item)} variant="primary" size="lg">
-                                        Buy for {ethers.utils.formatEther(item.totalPrice)} ETH
-                                    </Button>
-                                </div>
-                                </Card.Footer>
                             </Card>
+                        </Col>
+                        <Col className="col-lg-8 px-5 overflow-hidden">
+                            <h2>{item.name}</h2>
+                            <Row className="g-4 pt-5 pb-1">
+                                Sold {item.sold} times<br/>
+                            </Row>
+                            <Row className="g-4 pt-1 pb-4">
+                                {!hasBought ?
+                                    <Button onClick={() => buyMarketItem(item)} variant="primary" size="lg">
+                                        Buy for {ethers.utils.formatEther(item.totalPrice)} Matic
+                                    </Button>
+                                : (
+                                    <Button variant="primary" size="lg">
+                                        Play
+                                    </Button>
+                                )}
+                            </Row>
+                            <Row className="g-4 pt-1 pb-4">
+                                <h4>History</h4>
+                                <table className="table table-bordered table-striped table-light">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Buyer</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                30.07.2022 17:56
+                                            </td>
+                                            <td>
+                                                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </Row>
                         </Col>
                     </Row>
                 </div>

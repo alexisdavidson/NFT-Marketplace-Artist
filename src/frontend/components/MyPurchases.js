@@ -1,10 +1,24 @@
 import { useState, useEffect } from 'react'
 import { ethers } from "ethers"
-import { Row, Col, Card } from 'react-bootstrap'
+import { Row, Col, Card, Button } from 'react-bootstrap'
+import { useNavigate } from "react-router-dom";
 
 export default function MyPurchases({ marketplace, nft, account }) {
+  let navigate = useNavigate(); 
+
   const [loading, setLoading] = useState(true)
   const [purchases, setPurchases] = useState([])
+
+    const routeChangeViewItem = (item) => { 
+        let path = "/view-item" 
+        console.log("Navigate to view-item " + item.itemId)
+        navigate(path, {
+            state: {
+                itemId: parseInt(item.itemId)
+            }
+        })
+    }
+
   const loadPurchasedItems = async () => {
     // Fetch purchased items from marketplace by quering Offered events with the buyer set as the user
     const filter =  marketplace.filters.Bought(null,null,null,null,null,account)
@@ -51,7 +65,14 @@ export default function MyPurchases({ marketplace, nft, account }) {
               <Col key={idx} className="overflow-hidden">
                 <Card>
                   <Card.Img variant="top" src={item.image} />
-                  <Card.Footer>{ethers.utils.formatEther(item.totalPrice)} ETH</Card.Footer>
+                  <Card.Footer>{ethers.utils.formatEther(item.totalPrice)} Matic
+                    <div className='d-grid'>
+                      {ethers.utils.formatEther(item.totalPrice)} Matic <br/>
+                      <Button onClick={() => routeChangeViewItem(item)} variant="primary" size="lg">
+                          View
+                      </Button>
+                    </div>
+                  </Card.Footer>
                 </Card>
               </Col>
             ))}
