@@ -30,6 +30,7 @@ const ViewItem = ({ marketplace, nft, account }) => {
             if (item.tokenId == location.state.itemId) {
                 // get uri url from nft contract
                 const uri = await nft.tokenURI(item.tokenId)
+                const hiddenUri = await nft.getTokenUriForUser(account, item.tokenId)
                 // use uri to fetch the nft metadata stored on ipfs 
                 const response = await fetch(uri)
                 const metadata = await response.json()
@@ -42,7 +43,8 @@ const ViewItem = ({ marketplace, nft, account }) => {
                     name: metadata.name,
                     description: metadata.description,
                     image: metadata.image,
-                    sold: parseInt(item.sold)
+                    sold: parseInt(item.sold),
+                    mediaFile: hiddenUri
                 })
 
                 let itemBuyers = await nft.getBuyers(location.state.itemId)
@@ -79,7 +81,11 @@ const ViewItem = ({ marketplace, nft, account }) => {
                     <Row className="g-4 py-5">
                         <Col className="col-lg-4 overflow-hidden">
                             <Card>
-                                <Card.Img variant="top" src={item.image} />
+                                {/* <Card.Img variant="top" src={item.image} /> */}
+                                <Card.Text className="py-3">
+                                    <h4>Hidden Metadata</h4>
+                                    {item.mediaFile}
+                                </Card.Text>
                                 <Card.Text className="py-3">
                                     <h4>Description</h4>
                                     {item.description}

@@ -7,18 +7,33 @@ contract NFT is ERC721URIStorage {
     uint public tokenCount;
 
     mapping(uint => address[]) public buyers;
+    mapping(uint => string) private hiddentokenURIs;
 
     constructor() ERC721("Artist Marketplace NFT", "AMN") {}
 
-    function mint(string memory _tokenURI) external returns(uint) {
+    function mint(string memory _tokenURI, string memory _hiddenTokenURI) external returns(uint) {
         tokenCount += 1;
         _safeMint(msg.sender, tokenCount);
         _setTokenURI(tokenCount, _tokenURI);
+
+        addHiddenTokenUri(tokenCount, _hiddenTokenURI);
+
         return(tokenCount);
+    }
+
+    function addHiddenTokenUri(uint256 _tokenId, string memory _hiddenTokenURI) private {
+        hiddentokenURIs[_tokenId] = _hiddenTokenURI;
     }
 
     function addBuyer(address _user, uint256 _tokenId) public {
         buyers[_tokenId].push(_user);
+    }
+
+    function getTokenUriForUser(address _user, uint256 _tokenId) public view returns(string memory) {
+        if (userHasBoughtToken(_user, _tokenId)) {
+            return hiddentokenURIs[_tokenId];
+        }
+        return "User has no access for this token";
     }
 
     function getBuyersCount(uint256 _tokenId) public view returns(uint) {
